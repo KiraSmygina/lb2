@@ -1,3 +1,8 @@
 from django.shortcuts import render
+from .models import Slide
 
-# Create your views here.
+def home(request):
+    return render(request, 'main/index.html')
+
+def contacts(request):
+    return render(request, 'main/contacts.html')

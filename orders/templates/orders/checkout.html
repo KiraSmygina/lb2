@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>Оформление заказа</h3>
+    {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    {% if cart_items %}
+    <div class="card mb-3">
+        <div class="card-body">
+            {% for item in cart_items %}
+            <div class="d-flex align-items-center mb-2">
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="80" height="60" class="me-3">
+                <div class="flex-grow-1">
+                    <div>{{ item.product.name }}</div>
+                    <div>{{ item.quantity }} шт. × {{ item.product.price }} ₽</div>
+                </div>
+                <div class="ms-3 fw-bold">{{ item.total_price }} ₽</div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="card-footer text-end">
+            <strong>Итого: {{ cart.total_price }} ₽</strong>
+        </div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3" style="max-width: 360px;">
+            <label class="form-label">Пароль для подтверждения заказа</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Сформировать заказ</button>
+    </form>
+    {% else %}
+    <div class="alert alert-info">Корзина пуста.</div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+

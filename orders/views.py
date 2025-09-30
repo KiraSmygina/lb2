@@ -1,8 +1,9 @@
 # orders/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Cart, CartItem, Product
+from .models import Cart, CartItem, Product, Order, OrderItem
 from django.contrib import messages
+from django.contrib.auth import authenticate
 
 @login_required
 def cart_view(request):
@@ -58,9 +59,41 @@ def update_cart_item(request, item_id):
     
     return redirect('orders:cart')
 
-# Заглушки для будущих функций
+@login_required
 def checkout(request):
-    return render(request, 'orders/checkout.html')
+    cart, _ = Cart.objects.get_or_create(user=request.user)
+    if request.method == 'POST':
+        password = request.POST.get('password', '')
+        user = authenticate(username=request.user.username, password=password)
+        if user is None:
+            return render(request, 'orders/checkout.html', {
+                'cart': cart,
+                'cart_items': cart.items.all(),
+                'error': 'Неверный пароль'
+            })
 
-def order_history(request):
-    return render(request, 'orders/order_history.html')
+        if cart.items.count() == 0:
+            messages.error(request, 'Корзина пуста')
+            return redirect('orders:cart')
+
+        order = Order.objects.create(
+            user=request.user,
+            status='pending',
+            total_price=cart.total_price(),
+            shipping_address=''
+        )
+        for item in cart.items.all():
+            OrderItem.objects.create(
+                order=order,
+                product=item.product,
+                quantity=item.quantity,
+                price=item.product.price
+            )
+        cart.items.all().delete()
+        messages.success(request, f'Заказ #{order.id} сформирован')
+        return redirect('profile')
+
+    return render(request, 'orders/checkout.html', {
+        'cart': cart,
+        'cart_items': cart.items.all()
+    })

@@ -6,11 +6,46 @@
 <div class="row justify-content-center">
     <div class="col-md-6">
         <h2 class="text-center">Регистрация</h2>
-        <form method="post">
+        <form id="register-form" method="post" novalidate>
             {% csrf_token %}
             {{ form|crispy }}
+            <div id="form-errors" class="mt-2"></div>
             <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>
         </form>
+        <script>
+        (function() {
+            const form = document.getElementById('register-form');
+            const errorsBox = document.getElementById('form-errors');
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                errorsBox.innerHTML = '';
+                const formData = new FormData(form);
+                const resp = await fetch('', {
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    body: formData
+                });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    window.location.href = data.redirect || '/';
+                    return;
+                }
+                const data = await resp.json();
+                const errors = data.errors || {};
+                const list = document.createElement('div');
+                list.className = 'alert alert-danger';
+                let html = '<ul class="mb-0">';
+                Object.keys(errors).forEach(function(field) {
+                    errors[field].forEach(function(msg) {
+                        html += `<li>${field}: ${msg}</li>`;
+                    });
+                });
+                html += '</ul>';
+                list.innerHTML = html;
+                errorsBox.appendChild(list);
+            });
+        })();
+        </script>
     </div>
 </div>
 {% endblock %}

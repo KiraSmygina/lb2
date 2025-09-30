@@ -49,6 +49,7 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     shipping_address = models.TextField() # Позже можно заменить на модель Address
+    cancel_reason = models.TextField(blank=True, default="")
 
     def __str__(self):
         return f"Заказ #{self.id} от {self.user.username}"

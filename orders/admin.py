@@ -17,6 +17,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'status', 'total_price', 'created_at']
     list_filter = ['status', 'created_at']
     list_editable = ['status']
+    search_fields = ['user__username', 'user__surname', 'user__name']
 
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):

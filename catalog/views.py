@@ -4,8 +4,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Product, Category
 
 def product_list(request):
-    # Получаем все товары
-    products = Product.objects.all()
+    # Показываем только товары в наличии
+    products = Product.objects.filter(in_stock=True)
     
     # Фильтрация по категориям
     category_filters = request.GET.getlist('category')
@@ -26,10 +26,8 @@ def product_list(request):
         except ValueError:
             pass
     
-    # Фильтрация по наличию
-    in_stock = request.GET.get('in_stock')
-    if in_stock:
-        products = products.filter(in_stock=True)
+    # Наличие уже учитывается всегда (всегда только in_stock)
+    in_stock = True
     
     # Сортировка
     sort_by = request.GET.get('sort_by', 'created_at')

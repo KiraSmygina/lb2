@@ -229,15 +229,22 @@
         }
         
         .btn-outline-primary {
-            border-color: #667eea;
-            color: #667eea;
-            border-radius: 25px;
+            border: 2px solid transparent;
+            border-radius: 999px;
             padding: 12px 30px;
+            color: #667eea;
+            background: linear-gradient(#ffffff, #ffffff) padding-box,
+                        linear-gradient(135deg, #667eea 0%, #764ba2 100%) border-box;
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
         }
         
         .btn-outline-primary:hover {
-            background: #667eea;
-            color: white;
+            background: linear-gradient(#ffffff, #ffffff) padding-box,
+                        linear-gradient(135deg, #667eea 0%, #764ba2 100%) border-box;
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            color: #667eea;
         }
         
         .footer {
@@ -282,9 +289,11 @@
                 StarDance
             </a>
             
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link text-dark" href="{% url 'catalog:product_list' %}">Каталог</a>
-                <a class="nav-link text-dark" href="{% url 'contacts' %}">Контакты</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link text-dark" href="{% url 'home' %}">Главная</a>
+            <a class="nav-link text-dark" href="{% url 'catalog:product_list' %}">Каталог</a>
+            <a class="nav-link text-dark" href="{% url 'contacts' %}">Контакты</a>
+            <a class="nav-link text-dark" href="{% url 'orders:cart' %}">Корзина</a>
                 
                 {% if user.is_authenticated %}
                     <a class="nav-link text-dark" href="{% url 'profile' %}">Личный кабинет</a>
@@ -293,7 +302,7 @@
                         <button type="submit" class="btn btn-outline-primary btn-sm ms-2">Выйти</button>
                     </form>
                 {% else %}
-                    <a class="nav-link text-dark" href="{% url 'login' %}">Авторизация</a>
+                    <a class="btn btn-outline-primary btn-sm ms-2" href="{% url 'login' %}">Авторизация</a>
                     <a class="btn btn-primary btn-sm ms-2" href="{% url 'register' %}">Регистрация</a>
                 {% endif %}
             </div>
@@ -370,32 +379,18 @@
                 
                 <div class="row">
                     {% for product in products %}
-                    <div class="col-md-6 col-lg-4">
-                        <div class="product-card">
-                            <div class="product-image">
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <a href="{% url 'catalog:product_detail' product.slug %}" class="text-decoration-none text-dark">
+                            <div class="product-card h-100">
+                                <div class="product-image">
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                                </div>
+                                <div class="product-info">
+                                    <h3 class="product-title">{{ product.name }}</h3>
+                                    <p class="product-price">{{ product.price }} ₽</p>
+                                </div>
                             </div>
-                            <div class="product-info">
-                                <h3 class="product-title">{{ product.name }}</h3>
-                                <p class="product-price">{{ product.price }} ₽</p>
-                                <p class="product-stock {% if not product.in_stock %}text-danger{% endif %}">
-                                    {% if product.in_stock %}
-                                    в наличии
-                                    {% else %}
-                                    нет в наличии
-                                    {% endif %}
-                                </p>
-                                {% if product.in_stock %}
-                                <form method="post" action="{% url 'orders:add_to_cart' product.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn-add-to-cart">В корзину</button>
-                                </form>
-                                {% else %}
-                                <button class="btn-add-to-cart" disabled>Нет в наличии</button>
-                                {% endif %}
-                                <a href="{% url 'catalog:product_detail' product.slug %}" class="btn btn-outline-primary w-100 mt-2">Подробнее</a>
-                            </div>
-                        </div>
+                        </a>
                     </div>
                     {% empty %}
                     <div class="col-12">

@@ -53,7 +53,7 @@
     
     <div class="text-end">
         <a href="{% url 'catalog:product_list' %}" class="btn btn-secondary">Продолжить покупки</a>
-        <a href="#" class="btn btn-primary">Оформить заказ</a>
+        <a href="{% url 'orders:checkout' %}" class="btn btn-primary">Оформить заказ</a>
     </div>
     
     {% else %}
